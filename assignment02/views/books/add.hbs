@@ -1,0 +1,21 @@
+<h1>{{title}}</h1>
+
+<form method="POST"  enctype="multipart/form-data">
+<fieldset>
+    <label for="title" class="col-2">Title:</label>
+    <input name="title" id="title" required />
+</fieldset>
+<fieldset>
+    <label for="author" class="col-2">Author:</label>
+    <input name="author" id="author" />
+</fieldset>
+<fieldset>
+    <label for="genre" class="col-2">Genre:</label>
+    <input name="genre" id="genre" />
+</fieldset>
+<fieldset>
+    <label for="image">Upload Image</label>
+    <input type="file" id="image" name="image" value="" required>
+</fieldset>
+<button class="offset-3 btn btn-primary">Add</button>
+</form>
