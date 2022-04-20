@@ -1,0 +1,36 @@
+<h1>
+  {{title}}
+</h1>
+<form method="POST">
+  <fieldset>
+    <label for="title" class="col-2" >
+      Title:
+    </label>
+    <input name="title" id="title" required value="{{review.title}}"/>
+  </fieldset>
+  <fieldset>
+    <label for="reviewer" class="col-2">
+      Reviewer:
+    </label>
+    <input name="reviewer" id="reviewer" required value="{{review.reviewer}}" />
+  </fieldset>
+  <fieldset>
+    <label for="book" class="col-2">
+      Book:
+    </label>
+    <select name="book" id="book">
+      {{#each books}}
+        {{createOption this.title ../review.book }}
+      {{/each}}
+    </select>
+  </fieldset>
+    <fieldset>
+    <label for="body" class="col-2">
+      Body:
+    </label>
+    <input name="body" id="body" required value="{{review.body}}" />
+  </fieldset>
+  <button class="offset-3 btn btn-primary">
+    Save
+  </button>
+</form>

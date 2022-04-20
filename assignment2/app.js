@@ -1,3 +1,4 @@
+// Imports and Declarations
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
@@ -7,15 +8,23 @@ var logger = require('morgan');
 const mongoose = require('mongoose');
 var multer = require('multer');
 
+//declaring config
+const config = require('./config/globals');
 
-
-
+// declaring routes
 var indexRouter = require('./routes/index');
 var booksRouter = require('./routes/books');
 var reviewsRouter = require('./routes/reviews');
 
+// declaring passport and github auth
+const passport = require('passport');
+const session = require('express-session');
+const githubStrategy = require('passport-github2').Strategy;
+
+
 var app = express();
 
+// declaring path vars
 var fs = require('fs');
 var path = require('path');
 
@@ -30,12 +39,58 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// app secret for login with username and password
+app.use(session({
+  secret: 'w2022assignment',
+  resave: false,
+  saveUninitialized: false
+}));
+
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+const User = require('./models/user');
+passport.use(User.createStrategy());
+
+
+// Here is process for github auth
+passport.use(new githubStrategy({
+  clientID: config.github.clientId,
+  clientSecret: config.github.clientSecret,
+  callbackURL: config.github.callbackUrl
+},
+  async (accessToken, refreshToken, profile, done) => {
+    const user = await User.findOne({ oauthId: profile.id });
+    if (user) {
+      return done(null, user);
+    }
+    else {
+      const newUser = new User({
+        username: profile.username,
+        oauthId: profile.id,
+        oauthProvider: 'Github',
+        created: Date.now()
+      });
+      const savedUser = await newUser.save();
+      return done(null, savedUser);
+    }
+  }
+));
+
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
+// Passport process end
+
+// Connecting controllers and views
 app.use('/', indexRouter);
 app.use('/reviews', reviewsRouter);
 app.use('/books', booksRouter);
 app.use(express.static("public/images"));
 
-let connectionString = 'mongodb+srv://admin:strongpassword2022@cluster0.xdojp.mongodb.net/projecttracker'
+// Configuring and connecting to Database via config
+let connectionString = config.db;
 mongoose.connect(connectionString, { useNewUrlParser: true, useUnifiedTopology: true })
 .then((message)=> {
   console.log('Connection Success!');
@@ -44,18 +99,13 @@ mongoose.connect(connectionString, { useNewUrlParser: true, useUnifiedTopology: 
   console.log(`Error while connecting ${reason}`);
 });
 
-// HBS Helper Method to select values from dropdown lists
+// HBS Helper Method from class to select values from dropdown lists
 const hbs = require('hbs');
-// function name and helper function with parameters
 hbs.registerHelper('createOption', (currentValue, selectedValue) => {
-  // initialize selected property
   var selectedProperty = '';
-  // if values are equal set selectedProperty accordingly
   if (currentValue == selectedValue) {
     selectedProperty = 'selected';
   }
-  // return html code for this option element
-  // return new hbs.SafeString('<option '+ selectedProperty +'>' + currentValue + '</option>');
   return new hbs.SafeString(`<option ${selectedProperty}>${currentValue}</option>`);
 });
 

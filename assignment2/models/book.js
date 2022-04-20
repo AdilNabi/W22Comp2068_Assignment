@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 
-
 const schemaDefinition = {
     title: {
         type: String,
