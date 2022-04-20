@@ -7,8 +7,12 @@ var logger = require('morgan');
 const mongoose = require('mongoose');
 var multer = require('multer');
 
+
+
+
 var indexRouter = require('./routes/index');
 var booksRouter = require('./routes/books');
+var reviewsRouter = require('./routes/reviews');
 
 var app = express();
 
@@ -27,6 +31,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
+app.use('/reviews', reviewsRouter);
 app.use('/books', booksRouter);
 app.use(express.static("public/images"));
 
@@ -38,6 +43,22 @@ mongoose.connect(connectionString, { useNewUrlParser: true, useUnifiedTopology: 
 .catch((error)=> {
   console.log(`Error while connecting ${reason}`);
 });
+
+// HBS Helper Method to select values from dropdown lists
+const hbs = require('hbs');
+// function name and helper function with parameters
+hbs.registerHelper('createOption', (currentValue, selectedValue) => {
+  // initialize selected property
+  var selectedProperty = '';
+  // if values are equal set selectedProperty accordingly
+  if (currentValue == selectedValue) {
+    selectedProperty = 'selected';
+  }
+  // return html code for this option element
+  // return new hbs.SafeString('<option '+ selectedProperty +'>' + currentValue + '</option>');
+  return new hbs.SafeString(`<option ${selectedProperty}>${currentValue}</option>`);
+});
+
 
 
 

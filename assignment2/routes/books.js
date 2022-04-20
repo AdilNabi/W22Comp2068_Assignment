@@ -9,7 +9,6 @@ const Book = require('../models/book');
 const { dirname } = require('path');
 
 router.get('/', (req, res, next) => {
-	// res.render('books/index', {title: "Welcome to Book List"});
     Book.find((err, books)=> {
         if (err){
         console.log(err);
@@ -39,24 +38,6 @@ var upload = multer({
     storage: Storage,
 }).single("image");
 
-
-
-// router.post('/add', (req, res, next) => {
-// 	Book.create({
-// 		title: req.body.title,
-// 		author: req.body.author,
-// 		genre: req.body.genre,
-// 		image: req.file.filename
-// 	}, (err, newBook) => {
-// 		if(err) {
-// 			console.log(err);
-// 		}
-// 		else {
-// 			res.redirect('/books');
-// 		}
-// 	});
-// });
-
 router.post("/add", (req, res) => {
     upload(req, res, function (err) {
       if (err) {
@@ -74,6 +55,50 @@ router.post("/add", (req, res) => {
                 res.redirect('/books');
       }
     });
+  });
+
+  router.get('/edit/:_id', (req, res, next) => {
+    Book.findById(req.params._id, (err, book) => {
+        if (err) {
+            console.log(err);
+        }
+        else {
+                res.render('books/edit', {
+                    title: 'Edit a Book',
+                    book: book
+                    });
+            }
+            }).sort({ name: 1 });
+});
+
+// POST handler for Edit operations
+router.post('/edit/:_id', (req,res,next) => {
+    Book.findOneAndUpdate({_id: req.params._id}, {
+        title: req.body.title,
+        author: req.body.author,
+        genre: req.body.genre,
+    }, (err, updatedBook) => {
+        if (err) {
+            console.log(err)
+        }
+        else {
+            res.redirect('/books');
+        }
+    });
+});
+
+
+  router.get('/delete/:_id', (req, res, next) => {
+      Book.remove({
+        _id : req.params._id
+      }, (err) => {
+          if(err) {
+              console.log(err);
+          }
+          else {
+              res.redirect('/books');
+          }
+      });
   });
 
 

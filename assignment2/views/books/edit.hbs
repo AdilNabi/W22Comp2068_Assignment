@@ -1,0 +1,28 @@
+<h1>
+  {{title}}
+</h1>
+<form method="POST">
+  {{! Input names have to match the name of the fields in the mongo schema object }}
+  {{! Mapping is not automatic, but it's best practices }}
+  <fieldset>
+    <label for="title" class="col-2" >
+      Title:
+    </label>
+    <input name="title" id="title" required value="{{book.title}}"/>
+  </fieldset>
+  <fieldset>
+    <label for="author" class="col-2">
+      Author:
+    </label>
+    <input name="author" id="author" required value="{{book.author}}" />
+  </fieldset>
+    <fieldset>
+    <label for="genre" class="col-2">
+      Genre:
+    </label>
+    <input name="genre" id="genre" required value="{{book.genre}}" />
+  </fieldset>
+  <button class="offset-3 btn btn-primary">
+    Save
+  </button>
+</form>
