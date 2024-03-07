@@ -1,4 +1,4 @@
-<h1>Comp2068 Assignment 2</h1>
+<h1>Comp2068 Assignment</h1>
 
 This is an assignment for COMP2068 where I created a web application with CRUD functionality.
 
